@@ -1,0 +1,74 @@
+name: vercel PROD
+
+permissions:
+  id-token: write # This is required for requesting the JWT.
+  contents: read
+  checks: write
+  packages: read
+  statuses: write
+  pull-requests: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform plan & apply
+    runs-on: ubuntu-latest
+    environment: PROD
+    env:
+      REGION: us-east-1
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - uses: hashicorp/setup-terraform@v1
+      - uses: actions/checkout@v2
+
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
+      - name: Cache Terraform
+        uses: actions/cache@v2
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: ${{ runner.os }}-terraform-${{ hashFiles('.terraform.lock.hcl') }}
+
+      - name: Verify Terraform version
+        run: terraform --version
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }}
+          aws-region: ${{ env.REGION }}
+
+      - name: Configure aws credential profile
+        run: |
+              aws configure set default.region us-east-1
+              aws configure set default.aws_access_key_id ${{ env.AWS_ACCESS_KEY_ID }}
+              aws configure set default.aws_secret_access_key ${{ env.AWS_SECRET_ACCESS_KEY }}
+              aws configure set aws_session_token ${{ env.AWS_SESSION_TOKEN }}
+
+      - run: aws configure list-profiles
+
+      - name: Terraform init
+        id: init
+        run: terraform init
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
