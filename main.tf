@@ -30,7 +30,7 @@ resource "vercel_firewall_config" "ip-blocking" {
         }]
       }]
       action = {
-        action = "block"
+        action = "deny"
       }
     }
 
