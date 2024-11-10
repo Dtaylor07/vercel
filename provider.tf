@@ -9,6 +9,8 @@ terraform {
 
 provider "vercel" {
   # Configuration options
+  api_token = "jPbfOSyzmgBnaBqOwsQbTMh9"
+  team      = "team_GLNQNbd7yd2FqeuaivTbVzeT"
 }
 
 terraform {
