@@ -14,19 +14,19 @@ resource "vercel_firewall_config" "ip-blocking" {
   rules {
 
     rule {
-      name = "Geolocation Rule"
+      name        = "Geolocation Rule"
       description = "Restrict access from certain countries"
       # multiple conditions in a single condition group are evaluated as ANDs
       condition_group = [{
         conditions = [{
-          type = "country"
-          op = "eq"
+          type  = "country"
+          op    = "eq"
           value = "SY"
-        },
-        {
-          type = "country"
-          op = "eq"
-          value = "BL"
+          },
+          {
+            type  = "country"
+            op    = "eq"
+            value = "BL"
         }]
       }]
       action = {
@@ -34,19 +34,19 @@ resource "vercel_firewall_config" "ip-blocking" {
       }
     }
 
-#   ip_rules {
-#     # deny this subnet for all my hosts
-#     rule {
-#       action   = "deny"
-#       ip       = "51.85.1.0/16"
-#       hostname = "example.com"
-#     }
+    #   ip_rules {
+    #     # deny this subnet for all my hosts
+    #     rule {
+    #       action   = "deny"
+    #       ip       = "51.85.1.0/16"
+    #       hostname = "example.com"
+    #     }
 
-#     # rule {
-#     #   action = "challenge"
-#     #   ip = "1.2.3.4"
-#     #   hostname = "example.com"
-#     # }
-#   }
-}
+    #     # rule {
+    #     #   action = "challenge"
+    #     #   ip = "1.2.3.4"
+    #     #   hostname = "example.com"
+    #     # }
+    #   }
+  }
 }
