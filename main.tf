@@ -19,12 +19,12 @@ resource "vercel_firewall_config" "ip-blocking" {
       # multiple conditions in a single condition group are evaluated as ANDs
       condition_group = [{
         conditions = [{
-          type  = "country"
+          type  = "geo_country"
           op    = "eq"
           value = "SY"
           },
           {
-            type  = "country"
+            type  = "geo_country"
             op    = "eq"
             value = "BL"
         }]
