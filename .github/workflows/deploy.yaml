@@ -67,8 +67,8 @@ jobs:
       - name: Terraform init
         id: init
         run: terraform init
-
-        - name: Terraform validation
+        
+      - name: Terraform validation
         id: validate
         run: terraform validate -no-color
 
