@@ -27,6 +27,11 @@ resource "vercel_firewall_config" "ip-blocking" {
             type  = "geo_country"
             op    = "eq"
             value = "PK"
+          },
+          {
+            type  = "geo_country"
+            op    = "eq"
+            value = "AF"
         }]
       }]
       action = {
